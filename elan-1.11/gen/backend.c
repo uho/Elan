@@ -93,6 +93,8 @@ static void do_link ()
   ld_argv[ix++] = "-o";
   ld_argv[ix++] = exe_name;
   ld_argv[ix++] = object_fname;
+  ld_argv[ix++] = "-static";
+  ld_argv[ix++] = "-Wl,-z,execstack";
   for (iy = 0; iy < library_search_path -> size; iy++)
      { sprintf (buf, "-L%s", library_search_path -> array[iy]);
        ld_argv[ix++] = new_string (buf);
