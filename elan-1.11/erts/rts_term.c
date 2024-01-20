@@ -436,7 +436,7 @@ void rts_init_termio ()
 	     };
 
 	  /* clear screen */
-	  rts_putchar (ELAN_CLEARSCREEN);
+	  /* rts_putchar (ELAN_CLEARSCREEN); */
 	};
 
 /*
