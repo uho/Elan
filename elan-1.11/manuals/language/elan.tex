@@ -1,0 +1,1233 @@
+\documentclass [a4paper,12pt,fleqn]{article}
+\usepackage {../common/esprit,epsfig}
+\input {../common/abbrev}
+\input {../common/artdefs}
+\title {Description of the language \ELAN}
+\author {M. Seutter}
+\pagestyle {esprit}
+\begin {document}
+\maketitle
+\section {Introduction}
+\ELAN is to become a true superlanguage of {\sf ELAN}. The syntax of
+\ELAN will be described by a context free grammar, augmented with
+a number of metarules to improve readability of the grammar. For some
+of the grammar rules simple examples are given. The context conditions
+and the semantics for the syntactical constructs will be described
+verbally if necessary.
+\section {Abbreviations}
+\subsubsection*{Syntax}
+\begin {letterlist}
+\item
+\begin {verbatim}
+NOTION option:
+   NOTION;
+   .
+\end{verbatim}
+\item
+\begin{verbatim}
+NOTION sequence:
+   NOTION sequence, NOTION;
+   NOTION.
+\end{verbatim}
+\item
+\begin {verbatim}
+NOTION list:
+   NOTION list, comma token, NOTION;
+   NOTION.
+\end{verbatim}
+\item
+\begin{verbatim}
+NOTION pack:
+   open token, NOTION list, close token.
+\end{verbatim}
+\item
+\begin{verbatim}
+NOTION token:
+   comments option, NOTION symbol.
+\end{verbatim}
+\end{letterlist}
+\section {Programs and packets}
+\subsubsection*{Syntax}
+\begin {letterlist}
+\item
+\begin{verbatim}
+elan program:
+   packet sequence option, main packet.
+\end{verbatim}
+\item
+\begin{verbatim}
+packet:
+   packet head, packet body, packet tail.
+\end{verbatim}
+\item
+\begin{verbatim}
+main packet:
+   packet body.
+\end{verbatim}
+\item
+\begin{verbatim}
+packet head:
+   packet token, packet name,
+      export interface option, colon token.
+\end{verbatim}
+\item
+\begin{verbatim}
+export interface:
+   defines token, export name list.
+\end{verbatim}
+\item
+\begin{verbatim}
+packet body:
+   packet paragraph option, refinement sequence option.
+\end{verbatim}
+\item
+\begin{verbatim}
+packet paragraph:
+   packet unit, semicolon token, packet paragraph option.
+\end{verbatim}
+\item
+\begin{verbatim}
+packet unit:
+   basic declaration;
+   closed declaration;
+   import declaration.
+\end{verbatim}
+\item
+\begin{verbatim}
+packet tail:
+   end packet token, packet name option, semicolon token.
+\end{verbatim}
+\item
+\begin{verbatim}
+import declaration:
+   uses token, packet name list.
+\end{verbatim}
+\end{letterlist}
+Packets form the basic compilation units of \ELANns.
+\subsubsection*{Example}
+\begin {verbatim}
+fac:
+   INT VAR i;
+   put ("give number:\n");
+   get (i);
+   INT CONST i plus 1 :: i + 1;
+   INT VAR fac :: 1;
+   INT VAR counter1 :: 1;
+   INT VAR counter2;
+   INT VAR sum;
+   WHILE counter1 < i plus 1
+   REP
+      sum := 0;
+      counter2 := 0;
+      WHILE counter2 < counter 1
+      REP
+         sum := sum + fac;
+         counter2 := counter2 + 1
+      ENDREP;
+      counter1 := counter1 + 1
+   ENDREP;
+   put ("fac (");
+   put (text (i));
+   put (") = ");
+   put (text (fac));
+   put ("\n").
+\end{verbatim}
+\subsubsection*{Context conditions}
+A program has type VOID (possibly after coercions).
+Before parsing an \ELAN program, the \ELAN compiler reads the
+standard prelude from the file \verb+standard.e+.
+\section{Procedures and operators}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+procedure declaration:
+   procedure head, routine body, procedure tail.
+\end{verbatim}
+\item
+\begin{verbatim}
+procedure head:
+   result option, proc token, procedure name,
+      formal parameter pack, colon token.
+\end{verbatim}
+\item
+\begin{verbatim}
+procedure tail:
+   endproc token, procedure name option.
+\end{verbatim}
+\item
+\begin{verbatim}
+operator declaration:
+   operator head, routine body, operator tail.
+\end{verbatim}
+\item
+\begin{verbatim}
+operator head:
+   result, op token, operator name,
+      formal parameter pack, colon token.
+\end{verbatim}
+\item
+\begin{verbatim}
+operator tail:
+   endop token, operator name option.
+\end{verbatim}
+\item
+\begin{verbatim}
+routine body:
+   internal token, text denotation;
+   external token, text denotation;
+   paragraph, routine body tail.
+\end{verbatim}
+\item
+\begin{verbatim}
+routine body tail:
+   period token, refinement sequence;
+   .
+\end{verbatim}
+\item
+\begin{verbatim}
+result:
+   type declarer.
+\end{verbatim}
+\item
+\begin{verbatim}
+formal parameter:
+   formal declarer, parameter name list.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+A procedure declaration fixes the result type, name, argument type,
+and body of the declared procedure.
+\item[c)]
+If present, the procedure name in the procedure tail must match
+the procedure name in the procedure head.
+\item[d)]
+An operator declaration fixes the result type, name, number of arguments,
+argument types and body of the declared operator.
+\item[f)]
+If present, the operator name in the operator tail must match
+the operator name in the operator head.
+\item[g)]
+Internal routine bodies are directly translated by the \ELAN compiler,
+as indicated by their internal name. External routine bodies are mapped
+onto routines in the \ELAN runtime system, identified by their external name.
+\end{list}
+\subsubsection*{Examples}
+\begin{list}{-}{}
+\item[a)]
+\begin{verbatim}
+TEXT PROC text (INT CONST a):
+   EXTERNAL "int_to_text"
+ENDPROC;
+\end{verbatim}
+\item[d)] 
+\begin{verbatim}
+OP CAT (TEXT VAR a, TEXT b):
+   a := a + b;
+ENDOP CAT;
+\end{verbatim}
+\end{list}
+\section{Refinements, paragraphs and units}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+refinement:
+   refinement name, colon token,
+      paragraph option, period token.
+\end{verbatim}
+\item
+\begin{verbatim}
+paragraph:
+   paragraph, semicolon token, unit;
+   unit.
+\end{verbatim}
+\item
+\begin{verbatim}
+unit:
+   basic declaration;
+   expression.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+A refinement has the same type and access as the paragraph.
+\item[b)]
+A paragraph has the same type and access as the last unit in the
+paragraph. All other units in the paragraph have type VOID.
+An empty paragraph (paragraph option) has type VOID.
+\item[c)]
+A unit has the same type and access as the basic declaration or expression.
+\end{list}
+\subsubsection*{Semantics}
+\begin{list}{-}{}
+\item[ab)]
+The declarations and expressions of a paragraph will be executed
+sequentially from left to right. The result of a paragraph is
+the result of the last unit.
+\end{list}
+\section {Declarations and declarers}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+closed declaration:
+   procedure declaration;
+   operator declaration;
+   type declaration.
+\end{verbatim}
+\item
+\begin{verbatim}
+basic declaration:
+   object declaration;
+   synonym declaration.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+A closed declaration has type VOID. It is not allowed to declare multiple
+procedures or operators having the same name, number of arguments and same
+argument types.
+\end{list}
+\subsection {Object declarations}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+object declaration:
+   object declarer, object association list.
+\end{verbatim}
+\item
+\begin{verbatim}
+object association:
+   object name, object initialization option.
+\end{verbatim}
+\item
+\begin{verbatim}
+object initialization:
+   initial token, expression.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+An object declaration has type VOID.
+\item[b)]
+A variable may have an initialization. A constant must have an initialization.
+\end{list}
+\subsection {Synonym declarations}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+synonym declaration:
+   let token, synonym association list.
+\end{verbatim}
+\item
+\begin{verbatim}
+synonym assocation:
+   synonym value association;
+   synonym type association.
+\end{verbatim}
+\item
+\begin{verbatim}
+synonym value assocation:
+   synonym value name, equal token, expression.
+\end{verbatim}
+\item
+\begin{verbatim}
+synonym type association:
+   synonym type name, equal token, type declarer.
+\end{verbatim}
+\end{letterlist}
+\subsection {Type declarations}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+type declaration:
+   type token, type association list.
+\end{verbatim}
+\item
+\begin{verbatim}
+type association:
+   type name, equal token, type declarer.
+\end{verbatim}
+\end{letterlist}
+\subsection {Declarers}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+formal declarer:
+   object declarer.
+\end{verbatim}
+\item
+\begin{verbatim}
+object declarer:
+   type declarer, access declarer option.
+\end{verbatim}
+\item
+\begin{verbatim}
+type declarer:
+   elementary type declarer;
+   composed type declarer.
+\end{verbatim}
+\item
+\begin{verbatim}
+elementary type declarer:
+   concrete type declarer;
+   abstract type declarer.
+\end{verbatim}
+\item
+\begin{verbatim}
+concrete type declarer:
+   int token;
+   bool token;
+   real token;
+   text token.
+\end{verbatim}
+\item
+\begin{verbatim}
+abstract type declarer:
+   type name.
+\end{verbatim}
+\item
+\begin{verbatim}
+composed type declarer:
+   row declarer;
+   struct declarer;
+   union declarer.
+\end{verbatim}
+\item
+\begin{verbatim}
+row declarer:
+   row token, cardinality, type declarer.
+\end{verbatim}
+\item
+\begin{verbatim}
+cardinality:
+   denoter;
+   synonym value name.
+\end{verbatim}
+\item
+\begin{verbatim}
+struct declarer:
+   struct token, field specification pack.
+\end{verbatim}
+\item
+\begin{verbatim}
+field specification:
+   type declarer, field name list.
+\end{verbatim}
+\item
+\begin{verbatim}
+access declarer:
+   const token;
+   var token.
+\end{verbatim}
+\end{letterlist}
+\section {Expressions}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+expression:
+   assignment;
+   priority ii formula.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+The expression has the same type and access as the assignment or
+priority ii formula.
+\end{list}
+\subsection{Assignments}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+assignment:
+   destination, becomes token, source.
+\end{verbatim}
+\item
+\begin{verbatim}
+destination:
+   priority ii formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+source:
+   priority ii formula.
+\end{verbatim}
+\end{letterlist}
+Note that syntactically, the assignment acts as a priority i formula.
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+The assignment has the type VOID. The destination and source must
+have the same type.
+\item[b)]
+The destination has access VAR.
+\item[c)]
+The source has access CONST.
+\end{list}
+\subsubsection*{Semantics}
+\begin{list}{-}{}
+\item[a)]
+The left and right hand side of the assignment will be evaluated.
+Afterwards the value calculated for the right hand side will be
+assigned to the variable of the left hand side.
+\end{list}
+\subsection {Formulas}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+priority ii formula:
+   priority ii formula, priority ii operator, priority iii formula;
+   priority iii formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority ii operator:
+   capital name.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority iii formula:
+   priority iii formula, priority iii operator, priority iv formula;
+   priority iv formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority iii operator:
+   or token.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority iv formula:
+   priority iv formula, priority iv operator, priority v formula;
+   priority v formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority iv operator:
+   and token.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority v formula:
+   priority v formula, priority v operator, priority vi formula;
+   priority vi formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority v operator:
+   equal token;
+   not equal token.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority vi formula:
+   priority vi formula, priority vi operator, priority vii formula;
+   priority vii formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority vi operator:
+   less than token;
+   less equal token;
+   greater than token;
+   greater equal token.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority vii formula:
+   priority vii formula, priority vii operator, priority viii formula;
+   priority viii formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority vii operator:
+   plus token;
+   minus token.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority viii formula:
+   priority viii formula, priority viii operator, priority ix formula;
+   priority ix formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority viii operator:
+   asterix token;
+   div token;
+   mod token.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority ix formula:
+   priority ix formula, priority ix operator, monadic formula;
+   monadic formula.
+\end{verbatim}
+\item
+\begin{verbatim}
+priority ix operator:
+   obelix token.
+\end{verbatim}
+\item
+\begin{verbatim}
+monadic formula:
+   monadic operator, monadic formula;
+   primary.
+\end{verbatim}
+\item
+\begin{verbatim}
+monadic operator:
+   capital name;
+   plus token;
+   minus token;
+   not token.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a,c,e,g,i,k,m,o)]
+The types of the operands of the dyadic operator are determined.
+Using these types and the name of the dyadic operator, the corresponding
+operator definition is identified among the predefined operators.
+The type of the formula is the same as the result type of the
+identified operator; the access is CONST. The operands of the dyadic
+operator must have the same type and access as the corresponding formal
+parameter of the identified operator.
+\item[q)]
+The type of the operand of the monadic operator is determined.
+Using this type and the name of the monadic operator, the corresponding
+operator definition is identified among the predefined operators.
+The type of the monadic formula is the same as the result type of
+the identified operator; the access is CONST. The operand of the
+monadic operator must have the same type and access as the corresponding
+formal parameter of the identified operator. 
+\end{list}
+\subsubsection*{Semantics}
+\begin{list}{-}{}
+\item[a,b)]
+The corresponding operator will be called after the evaluation of
+the operands. The result of the application of operators should be
+as expected by the conventions of analysis.
+\end{list}
+\section {Primaries}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+primary:
+   conditional choice;
+   numerical choice;
+   repetition;
+   terminator;
+   closed clause;
+   display;
+   subscription;
+   selection;
+   abstractor;
+   concretizer;
+   nil;
+   call;
+   denoter;
+   identifier application.
+\end{verbatim}
+\item
+\begin{verbatim}
+closed clause:
+   open token, paragraph, close token.
+\end{verbatim}
+\item
+\begin{verbatim}
+display:
+   sub token, expression list, bus token.
+\end{verbatim}
+\item
+\begin{verbatim}
+subscription:
+   primary, sub token, expression, bus token.
+\end{verbatim}
+\item
+\begin{verbatim}
+selection:
+   primary, period token, field name.
+\end{verbatim}
+\item
+\begin{verbatim}
+abstractor:
+   type name, colon token, primary.
+\end{verbatim}
+\item
+\begin{verbatim}
+concretizer:
+   concr token, primary.
+\end{verbatim}
+\item
+\begin{verbatim}
+nil:
+   nil token.
+\end{verbatim}
+\item
+\begin{verbatim}
+call:
+   procedure name, actual parameter list pack.
+\end{verbatim}
+\item
+\begin{verbatim}
+actual parameter:
+   expression.
+\end{verbatim}
+\item
+\begin{verbatim}
+identifier application:
+   refinement name;
+   procedure name;
+   constant name;
+   variable name.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item [a)]
+The primary has the same type and access as the conditional clause,
+repetition, call, denoter, enclosed expression or identifier application.
+\item [c)]
+The type of the actual parameter of the call is determined.
+Using this type and the procedure name, the corresponding
+procedure definition is identified among the defined procedures.
+The type of the call is the same as the result type of
+the identified procedure; the access is CONST. The actual parameter
+of the call must have the same type and access as the corresponding
+formal parameter of the identified procedure. 
+\item [e)]
+The type and access of an identifier application is the type
+and access of the object whose declaration defined the identifier.
+However if the access demanded by the context is CONST and the
+identified object is a variable, the access of the identifier
+application is coerced to CONST.
+\end{list}
+\subsubsection*{Semantics}
+\begin{list}{-}{}
+\item[b)]
+The corresponding procedure will be called after the evaluation of
+the argument. 
+\item[d)]
+An identifier application yields the identified object. Needs more
+elaboration
+\end{list}
+\section {Control constructs}
+\subsection {The conditional choice}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+conditional choice:
+   if token, condition, then part, else part option,
+      end if token.
+\end{verbatim}
+\item
+\begin{verbatim}
+condition:
+   expression.
+\end{verbatim}
+\item
+\begin{verbatim}
+then part:
+   then token, paragraph.
+\end{verbatim}
+\item
+\begin{verbatim}
+else part:
+   else token, paragraph;
+   elif token, condition, then part, else part option.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+The conditional choice has the same type and access as the then part
+and else part option. If the else part option is empty, it has type VOID.
+\item[b)]
+The condition has type BOOL and access CONST.
+\item[c)]
+The then part has the same type and access as the paragraph.
+\item[d)]
+The else part has the same type and access as the paragraph
+or the then part and else part option. If the else part option is
+empty, it has type VOID.
+\end{list}
+\subsubsection*{Semantics}
+\begin{list}{-}{}
+\item[a)]
+In a conditional choice, the condition is evaluated first. If the condition
+yields the value TRUE, the then part will be executed. If it yields the
+value FALSE, the else part will be executed if present.
+\item[d)]
+In an else part conforming to the second alternative, the condition is
+evaluated first. If the condition yields the value TRUE, the then part will
+be executed. If it yields the value FALSE, the else part will be executed if
+present.
+\end{list}
+\subsection {The numerical choice}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+numerical choice:
+   select token, expression, of token, case part sequence,
+      otherwise part option, end select token.
+\end{verbatim}
+\item
+\begin{verbatim}
+case part:
+   case token, case label list, colon token, paragraph option.
+\end{verbatim}
+\item
+\begin{verbatim}
+case label:
+   denoter;
+   synonym value name.
+\end{verbatim}
+\item
+\begin{verbatim}
+otherwise part:
+   paragraph option.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+The numerical choice has the same type and access as the case part sequence
+and the otherwise part option. If the otherwise part option is emprt, it has
+type VOID. The expression has type INT and access CONST. All parts of the
+case part sequence have the same type and access.
+\item[b)] 
+The case part has the same type and access as the paragraph.
+\item[c)]
+The case label must have type INT. Its integer value should be statically known.
+\item[d)]
+The otherwise part has the same type and access as the paragraph.
+\end{list}
+\subsubsection*{Semantics}
+\begin{list}{-}{}
+\item[a)]
+In a numerical choice, the expression is evaluated first. If the expression
+yields a value which is equal to the value of one of the case labels, the
+corresponding paragraph will be executed. If it does not match any case label,
+the otherwise part will be executed if present.
+\end{list}
+\subsection {The repetition}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+repetition:
+   for part option, from part option,
+      direction part option, while part option,
+      rep token, paragraph, until part option,
+      endrep token.
+\end{verbatim}
+\item
+\begin{verbatim}
+for part:
+   for token, loop variable name.
+\end{verbatim}
+\item
+\begin{verbatim}
+loop variable name:
+   small name.
+\end{verbatim}
+\item
+\begin{verbatim}
+from part:
+   from token, expression.
+\end{verbatim}
+\item
+\begin{verbatim}
+direction part:
+   upto token, expresion;
+   downto token, expression.
+\end{verbatim}
+\item
+\begin{verbatim}
+while part:
+   while token, condition.
+\end{verbatim}
+\item
+\begin{verbatim}
+until part:
+   until token, condition.
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+The repetition always has type void.
+\item[b)]
+The loop variable must be declared.
+It must have type INT and access VAR.
+\item[d)]
+The expression must have type INT and access CONST.
+\item[e)]
+The expressions must have type INT and access CONST.
+\item[f)]
+The condition must have type BOOL and access CONST.
+\item[g)]
+The condition must have type BOOL and access CONST.
+\end{list}
+\subsubsection*{Semantics}
+If the for part is absent, an anonymous variable of type INT and access VAR
+is used as the loop variable. Initially the from part, if present, is
+evaluated and assigned to the loop variable. If the from part is absent
+the value 1 is assigned to the loop variable. Next the direction part,
+if present, is evaluated.
+
+The evaluation of a repetition then consists of continuously iterating the
+following steps:
+\begin{list}{-}{}
+\item
+If the direction part is present as its first alternative, the value of the
+loop variable is compared with the value evaluated for the direction part.
+If it is greater, the evaluation of the repetition is finished.
+
+If the direction part is present as its second alternative, the value of the
+loop variable is compared with the value evaluated for the direction part.
+If it is less, the evaluation of the repetition is finished.
+\item
+If present, the while part, is evaluated. If it yields the value FALSE,
+the evaluation of the repetition is finished. If it yields the value TRUE or
+if the while part is absent, the evaluation of the repetition continues.
+\item
+The paragraph is evaluated.
+\item
+If present, the until part, is evaluated. If it yields the value TRUE,
+the evaluation of the repetition is finished. If it yields the value FALSE or
+if the until part is absent, the evaluation of the repetition continues.
+\item
+If the direction part is absent or if the direction part is present as its
+first alternative, the value of the loop variable is incremented.
+
+If the direction part is present as its second alternative, the value of the
+loop variable is decremented.
+\end{list}
+\subsection {The terminator}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+terminator:
+   leave token, algorithm name, premature result option.
+\end{verbatim}
+\item
+\begin{verbatim}
+premature result:
+   with token, expression.
+\end{verbatim}
+\end{letterlist}
+\section{Names}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+export name:
+   constant name;
+   procedure name;
+   operator name;
+   type name.
+\end{verbatim}
+\item
+\begin{verbatim}
+packet name:
+   small name.
+\end{verbatim}
+\item
+\begin{verbatim}
+refinement name:
+   small name.
+\end{verbatim}
+\item
+\begin{verbatim}
+constant name:
+   small name.
+\end{verbatim}
+\item
+\begin{verbatim}
+variable name:
+   small name.
+\end{verbatim}
+\item
+\begin{verbatim}
+parameter name:
+   small name.
+\end{verbatim}
+\item
+\begin{verbatim}
+procedure name:
+   small name.
+\end{verbatim}
+\item
+\begin{verbatim}
+field name:
+   small name.
+\end{verbatim}
+\item
+\begin{verbatim}
+operator name:
+   capital name;
+   special name.
+\end{verbatim}
+\item
+\begin{verbatim}
+type name:
+   capital name.
+\end{verbatim}
+\item
+\begin{verbatim}
+capital name:
+   comments option, [A-Z][A-Z0-9]*,
+   { A capital name may not be one of the reserved
+     words, named in the section 10 }.
+\end{verbatim}
+\item
+\begin{verbatim}
+small name:
+   small name, comments option, [a-z0-9]+;
+   comments option, [a-z][a-z0-9]*.
+\end{verbatim}
+\item
+\begin{verbatim}
+special name:
+   or token;
+   and token;
+   equal token;
+   not equal token;
+   less token;
+   less equal token;
+   greater token;
+   greater equal token;
+   plus token;
+   minus token;
+   asterix token;
+   divides token;
+   div token;
+   mod token;
+   obelix token;
+   not token.
+\end{verbatim}
+\end{letterlist}
+\section {Denoters}
+\subsubsection*{Syntax}
+\begin{letterlist}
+\item
+\begin{verbatim}
+denoter:
+   comments option, denotation.
+\end{verbatim}
+\item
+\begin{verbatim}
+denotation:
+   integer denotation;
+   boolean denotation;
+   real denotation;
+   text denotation.
+\end{verbatim}
+\item
+\begin{verbatim}
+integer denotation:
+   digit sequence.
+\end{verbatim}
+\item
+\begin{verbatim}
+boolean denotation:
+   true symbol;
+   false symbol.
+\end{verbatim}
+\item
+\begin{verbatim}
+real denotation:
+   digit sequence, period symbol,
+      digit sequence, exponent option.
+\end{verbatim}
+\item
+\begin{verbatim}
+exponent:
+   e symbol, sign option, digit sequence.
+\end{verbatim}
+\item
+\begin{verbatim}
+text denotation:
+   quote symbol, text item sequence option, quote symbol.
+\end{verbatim}
+\item
+\begin{verbatim}
+digit:
+   [0-9].
+\end{verbatim}
+\item
+\begin{verbatim}
+text item:
+   ([^\\\n\"]|\\.).
+\end{verbatim}
+\end{letterlist}
+\subsubsection*{Context conditions}
+\begin{list}{-}{}
+\item[a)]
+The type of the denoter is the same as the type of the
+denotation. The access of a denoter is CONST.
+\item[b)]
+The type of a denotation is INT if it is an integer denotation,
+REAL if it is a real denotation, BOOL if it is a boolean denotation and
+TEXT if it is a text denotation.
+\end{list}
+\section {Symbols}
+The following table describes all symbols used in the \ELAN language.
+Layout inside the symbols is not allowed.
+\begin{center}
+\begin{tabular}{lll}
+uses symbol & & \verb+USES+\\
+end symbol & & \verb+END+\\
+proc symbol & & \verb+PROC+\\
+endproc symbol & & \verb+ENDPROC+\\
+op symbol & & \verb+OP+\\
+endop symbol & & \verb+ENDOP+\\
+let symbol & & \verb+LET+\\
+type symbol & & \verb+TYPE+\\
+int symbol & & \verb+INT+\\ 
+real symbol & & \verb+REAL+\\
+bool symbol & & \verb+BOOL+\\
+text symbol & & \verb+TEXT+\\
+row symbol & & \verb+ROW+\\
+array symbol & & \verb+ARRAY+\\
+struct symbol & & \verb+STRUCT+\\
+const symbol & & \verb+CONST+\\
+var symbol & & \verb+VAR+\\
+if symbol & & \verb+IF+\\
+then symbol & & \verb+THEN+\\
+elif symbol & & \verb+ELIF+\\
+else symbol & & \verb+ELSE+\\
+endif symbol & & \verb+ENDIF+\\
+for symbol & & \verb+FOR+\\
+from symbol & & \verb+FROM+\\
+upto symbol & & \verb+UPTO+\\
+downto symbol & & \verb+DOWNTO+\\
+while symbol & & \verb+WHILE+\\ 
+until symbol & & \verb+UNTIL+\\
+rep symbol & & \verb+REP+\\
+endrep symbol & & \verb+ENDREP+\\
+select symbol & & \verb+SELECT+\\
+of symbol & & \verb+OF+\\
+case symbol & & \verb+CASE+\\
+otherwise symbol & & \verb+OTHERWISE+\\
+endselect symbol & & \verb+ENDSELECT+\\
+concr symbol & & \verb+CONCR+\\
+leave symbol & & \verb+LEAVE+\\
+with symbol & & \verb+WITH+\\
+\hspace*{8em} & \hspace*{2em} & \hspace*{8em}
+\end {tabular}
+\end {center}
+\begin{center}
+\begin{tabular}{lll}
+colon symbol & & \verb+:+\\
+initial symbol & & \verb+::+\\
+becomes symbol & & \verb+:=+\\
+semicolon symbol & & \verb+;+\\
+period symbol & & \verb+.+\\
+comma symbol & & \verb+,+\\
+open symbol & & \verb+(+\\
+close symbol & & \verb+)+\\
+sub symbol & & \verb+[+\\
+bus symbol & & \verb+]+\\
+plus symbol & & \verb-+-\\
+minus symbol & & \verb+-+\\
+asterix symbol & & \verb+*+\\
+divides symbol & & \verb+/+\\
+obelix symbol & & \verb+**+\\
+equal symbol & & \verb+=+\\
+not equal symbol & & \verb+<>+\\
+less than symbol & & \verb+<+\\
+less equal symbol & & \verb+<=+\\
+greater than symbol & & \verb+>+\\
+greater equal symbol & & \verb+>=+\\
+or symbol & & \verb+OR+\\
+and symbol & & \verb+AND+\\
+div symbol & & \verb+DIV+\\
+mod symbol & & \verb+MOD+\\
+not symbol & & \verb+NOT+\\
+true symbol & & \verb+TRUE+\\
+false symbol & & \verb+FALSE+\\
+e symbol & & \verb+E+\\
+quote symbol & & \verb+"+\\
+comment open symbol & & \verb+{+\\
+comment close symbol & & \verb+}+\\
+\hspace*{8em} & \hspace*{2em} & \hspace*{8em}
+\end {tabular}
+\end {center}
+The following table describes all additional symbols allowed in
+packets:
+\begin{center}
+\begin{tabular}{lll}
+packet symbol & & \verb+PACKET+\\
+endpacket symbol & & \verb+ENDPACKET+\\
+defines symbol & & \verb+DEFINES+\\
+all symbol & & \verb+ALL+\\
+internal symbol & & \verb+INTERNAL+\\
+external symbol & & \verb+EXTERNAL+\\
+\hspace*{8em} & \hspace*{2em} & \hspace*{8em}
+\end {tabular}
+\end {center}
+\section {Comments and layout}
+\subsubsection*{Syntax}
+\begin {letterlist}
+\item
+\begin{verbatim}
+comments:
+   comments option, comment, layout;
+   layout.
+\end{verbatim}
+\item
+\begin{verbatim}
+comment:
+   comment open symbol, comment chars,
+      comment close symbol.
+\end{verbatim}
+\item
+\begin{verbatim}
+comment chars:
+   [^{}]*.
+\end{verbatim}
+\item
+\begin{verbatim}
+layout:
+   [ \t\n\r]*.
+\end{verbatim}
+\end {letterlist}
+\subsubsection*{Example}
+\begin{verbatim}
+   { This is a comment }
+\end{verbatim}
+\subsubsection*{Semantics}
+Comments are meaningless for the execution of the program. They
+only serve as documentation for human readers of programs.
+\section{Coercions}
+There are two coercions in \ELANns, namely:
+\begin{ciphlist}
+\item
+consting: when demanded by the context the access of a variable
+application is forced to CONST. This yields the value of the variable.
+\item
+voiding: may be applied to any expression. The value of the expression
+is forgotten. The result has the type VOID.
+\end{ciphlist}
+\end {document}

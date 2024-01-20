@@ -1,0 +1,14 @@
+\mark{{}{}} 
+
+\def\ps@esprit{\let\@mkboth\markboth
+\def\@oddfoot{}\def\@evenfoot{}\def\@evenhead{\rm \thepage\hfil \sl
+\leftmark}\def\@oddhead{\hbox{}\sl \rightmark \hfil
+\rm\thepage}\def\chaptermark##1{\markboth {\ifnum \c@secnumdepth
+>\m@ne
+ \fi ##1}{}}\def\sectionmark##1{\markright
+{\ifnum \c@secnumdepth >\z@
+ \fi ##1}}}
+
+
+\ps@esprit \pagenumbering{arabic} \onecolumn 
+

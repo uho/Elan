@@ -1,0 +1,10 @@
+#
+#  File: dcg_plist.def
+#  Generated on Thu Aug 23 22:26:45 2012
+#
+#ifndef IncDefDcg_plist
+#define IncDefDcg_plist
+
+> [int];
+> [string];
+#endif

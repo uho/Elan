@@ -1,0 +1,32 @@
+This is version 1.10 of the new Elan compiler. If you encounter
+any problems while compiling or testing Elan, do not hesitate
+to email me (marcs@cs.ru.nl) and I will try and correct the
+problems.
+
+Elan makes use of the following GNU tools:
+
+- gcc
+- make	(the GNU make, check with --version)
+
+All of these tools are available from a large number of ftp-sites.
+
+It also makes use of the datastructure generator mimir,
+available at ftp.cs.kun.nl:/pub/vb/mimir-2.17.tgz
+
+I have successfully built and tested Elan on the following
+platforms:
+
+   CPU          OS              Comment
+   i686         Linux 2.2.19    Slackware
+   i686         Linux 2.2.10    Suse 6
+   i686         Linux 2.4.5     Debian
+   amd64        FreeBSD 4.4/4.6 SMP
+   sparc-sun4m  Solaris 2.8
+   sparc-sun4u  Solaris 2.9
+   alpha        NetBSD
+
+                                        Success, Marc Seutter
+                                        (marcs@cs.ru.nl)
+
+Note for installation on sparc: the 64 bit Sparc V9 architecture
+is not yet supported.

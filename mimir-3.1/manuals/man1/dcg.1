@@ -1,0 +1,63 @@
+.\"
+.\" Manual pages for dcg
+.\" Copyright (C) 2007, M. Seutter
+.\" 
+.\"
+.TH dcg 1 "14 dec 2007"
+.LO 1
+.SH NAME
+dcg \- datastructure generator.
+.SH SYNOPSYS
+dcg [many options possible] filename
+.SH WARNING
+The information in the man page is an extract from the full documentation
+of the dcg datastructure generator. As dcg tends to evolve over time, this
+man page might not always be up to date.
+.SH DESCRIPTION
+.B dcg
+generates a C header and source file from a dcg data structure description
+for subsequent compilation by a C compiler.
+.SH OPTIONS
+Options must be separated: `-xn' is different from `-x -n'.
+The following options are specific for \fBdcg\fR.
+.TP
+.B -h
+provides help on using \fBdcg\fR.
+.TP
+.B -V
+gives version of \fBdcg\fR.
+.TP
+.B -n
+forces \fBdcg\fR not to code i.e. the source files are only checked for validity.
+.TP
+.B -v
+gives extra information while \fBdcg\fR is generating.
+.TP
+.B -fv
+gives lots of extra information while \fBdcg\fR is generating.
+.TP
+\fB\-I\fR\fIdir\fR
+adds \fIdir\fR to the search path (i.e. the list of directories
+to search for \fBdcg\fR def files).
+.SH COPYING
+Copyright (C) 2008 Marc Seutter
+.br
+
+Mimir is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
+.br
+
+Mimir is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+(Library) General Public License for more details.
+.br
+
+You should have received a copy of the GNU Library General Public
+License and a copy of the GNU General Public License along with
+this version of MCDL; If not, see <http://www.gnu.org/licenses/>.
+.SH AUTHOR
+M. Seutter
+

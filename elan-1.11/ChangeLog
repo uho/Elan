@@ -1,0 +1,48 @@
+Version 1.0 January 2003
+- And so it begins
+
+Version 1.1 February 2003
+- Alpha codegenerator works and passes acceptance test
+- Fixed omission of int to real
+- Fixed datadir/elan as preldir
+
+Version 1.2 March 2003
+- Deleted driver; assembling and linking is done by forking from the compiler
+
+Version 1.3 July 2003
+- Removed export.h from compiler
+
+Version 1.4 February 2004
+- implemented multiple packet use
+- implemented packet preparsing
+- multiple small bugs fixed
+- configure now aborts properly when it cannot find dcg
+- implemented extended scope semantics
+
+Version 1.5 Summer 2004
+- added packet API for user packets implemented in C
+- implemented socket library (With thanks to Jaap Boender)
+- Bug fix in display type checking
+
+Version 1.6 Spring 2005
+- Deletion of ELAN0 file io from standard prelude (non reentrant)
+- Reduced the number of nonreentrant routines in standard prelude
+- Removal of small bug in socket code
+- Addition of ELAN0 file io packet for old code support
+- Addition of additional tuple codes to prepare for local optimization
+- Construction of basic blocks
+- Runtime system can now be compiled with plain vt52 cursor control
+  or curses cursor control. The latter was needed for the MINGW port
+- Added MINGW port
+- The ELAN runtime system has been made thread-safe.....
+
+Version 1.7 Autumn 2005
+- Implemented procedure parameters
+- Implemented thread library
+- Fixed some small bugs
+
+Version 1.8 January 2007
+- Added man page
+- Added amd64 codegenerator
+- Header files of the runtime system now install on $prefix_dir/share/elan/include
+- Added graphics packet for an X11/Xt binding

@@ -1,0 +1,114 @@
+## 
+## Process this file with automake to produce Makefile.in
+##
+## CVSID: "$Id: Makefile.am,v 1.10 2007/01/25 23:58:13 marcs Exp $"
+##
+EXTRA_DIST =	ackermann.e \
+		beep.e \
+		calc.e \
+		complex.e \
+		date.e \
+		ehm.e \
+		empty.e \
+		fac.e \
+		filecopy.e \
+		filehello.e \
+		ggd.e \
+		graphics_test.e \
+		hanoi.e \
+		hanoi2.e \
+		hello.e \
+		ints.e \
+		intrange.e \
+		keesrecur.e \
+		kwad.e \
+		life.e \
+		list.e \
+		loopje.e \
+		ltt.e \
+		mandelbrot.e \
+		nqueens.e \
+		packet_test.e \
+		pi.e \
+		power.e \
+		pqp.e \
+		ptest.e \
+		rand.e \
+		reals.e \
+		rotten.e \
+		rows.e \
+		rows2.e \
+		rows2d.e \
+		rows2d0.e \
+		rows3.e \
+		rows4.e \
+		sem.e \
+		sem2.e \
+		subtest.e \
+		synt.e \
+		test_threads.e \
+		text2.e \
+		texts.e \
+		timer.e \
+		timer2.e \
+		treetest.e \
+		treetest2.e \
+		tt.e \
+		wazig.e \
+		woord.e \
+		zomgame.e
+
+CLEANFILES =	ackermann \
+		beep \
+		calc \
+		date \
+		ehm \
+		empty \
+		fac \
+		filecopy \
+		filehello \
+		ggd \
+		graphics_test \
+		hanoi \
+		hanoi2 \
+		hello \
+		ints \
+		intrange \
+		kareltest \
+		keesrecur \
+		kwad \
+		life \
+		list \
+		loopje \
+		ltt \
+		nqueens \
+		packet_test \
+		pi \
+		power \
+		pqp \
+		ptest \
+		rand \
+		reals \
+		rotten \
+		rows \
+		rows2 \
+		rows2d \
+		rows2d0 \
+		rows3 \
+		rows4 \
+		sem \
+		sem2 \
+		subtest \
+		synt \
+		test_threads \
+		text2 \
+		texts \
+		timer \
+		timer2 \
+		treetest \
+		treetest2 \
+		tt \
+		wazig \
+		zomgame \
+		*.o \
+		*.s

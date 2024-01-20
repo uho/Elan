@@ -1,0 +1,35 @@
+#
+# File: ndcg.dcg
+# Defines the datastructures used by the current version of dcg
+# i.e. Applying dcg to ndcg.dcg should yield two files ndcg.[ch]
+# which apart from some small changes should equal dcg_code.[ch]
+#
+# CVS ID: "$Id: ndcg.dcg,v 1.2 2002/11/01 12:44:31 marcs Exp $"
+#
+def =	 ( lhs:		string;				# base name of type
+	   -nrlsts:	int;				# nr of needed list levels
+	   -implsts:	int;				# nr of imported list levels
+	   Primitive 					# Standard type
+	 | Enum		elems:[string]			# Enumeration type
+	 | Record	fixed:[field] variant:[vfield]	# Record
+	 ;
+	 );
+
+stat =	 ( Use	utype:[type]				# Use statement
+	 | Import imp:string;
+	 );
+
+field =  ( fname: string;				# Fixed field
+	   ftype: type;
+	   ftrav: int;
+	 );
+
+vfield = ( cons: string;				# Variant field
+	   parts: [field];
+	 );
+
+type =	 ( Tname tname:string |				# Type name
+	   Tlist etyp:type ;				# List of type
+	 );
+
+? [def], [stat];

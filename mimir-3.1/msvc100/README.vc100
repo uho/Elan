@@ -1,0 +1,7 @@
+Compiling mimir under Visual C++ should be fairly easy.
+
+Double click on the solution file (mimir.sln) to start
+Visual C++ and build the solution. I have created and
+tested this solution file with Visual 10.0 under Windows7
+
+Good luck, Marc Seutter

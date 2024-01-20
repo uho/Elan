@@ -1,0 +1,16 @@
+This is the most recent compiler version for ELAN. It is
+strictly intended for Linux/Unix. It assumes that you have
+gcc installed on your computer, as it uses the compiler
+driver to assemble and link. The Elan compiler can generate
+assembler code for Intel x86, AMD 64, Sparc (<V9), Alpha
+as well as VAX11 (not tested; anyhow who has a VAX11 still
+in operation nowadays). Several runtime extensions are also
+available namely the socket, experimental X11/Xaw, and
+experimental thread library.
+
+To compile the new Elan compiler, you must also download
+the datastructure generator packet mimir from
+ftp://ftp.cs.ru.nl/pub/vb/mimir
+
+Good luck, Marc Seutter
+(marcs@cs.ru.nl)

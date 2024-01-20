@@ -1,0 +1,74 @@
+Version 2.0
+-  Reimplementation of memory allocator
+-  Memory is managed through an incremental garbage collector
+
+Version 2.1
+-  Made calls to other named rts possible
+-  Implemented init_<type>_list
+
+Version 2.2
+-  Implemented arbitrary lists (such as lists of lists)
+-  Brought mimir under CVS control at twoquid.cs.kun.nl:/home/cvs
+-  Fixed last horrible bug in mimirs own memory allocator
+
+Version 2.3
+-  Libdcg is now alpha compliant
+-  Added -I option to search for def files
+
+Version 2.4
+-  Added libdcg2 to contain basic integer and string lists
+-  Path may now be concatenated to -I flag
+-  Added often used code to libdcg2 for integer and string lists
+
+Version 2.5
+-  Fixed header file
+-  Replaced qint by int64 and u_qint by u_int64  
+-  Did some preparation for WIN32 port
+
+Version 2.6
+-  Added nonrecursive detaching of lists
+
+Version 2.7
+-  Did further preparation for WIN32 port
+-  Rewrote memory allocator for larger objects (causing more overhead,
+   but now allowing for objects larger than 64KB)
+-  Added -V option to report dcg's version
+-  Fixed several panics into bad_tags
+-  Added case insensitive string equality test
+
+Version 2.8
+-  Removed export.h for WIN32 VC++ port
+-  Updated tree in generator
+
+Version 2.9
+-  Added recursive duplication routines
+-  Added some routines to dcg_plist_ops
+-  Fixed code for WIN32 VC++ port
+
+Version 2.10
+-  dcg_convert_string checks for escaped chars
+
+Version 2.11
+-  Added onexit to init_error for post panic actions
+-  Added bounds check on generated insert/delete in lists
+-  Added depcomp to distribution tar ball
+
+Version 2.12
+-  List sizes are now saved in the same way as ints
+-  Deleted extern in all public header files
+-  Added -xt to generate a tags only file
+
+Version 2.13
+-  Changed the save and load format of all ints, reals and internal sizes
+-  Changed flex and bison prefix from dcg -> pdcg to avoid name clash in modern gccs
+
+Version 2.14
+-  Fixed bug in the loading of signed ints and int64s
+-  Added defines for MINGW in dcg.h
+-  Finished code for WIN32 VC++ 6.0 port
+-  Removed an old mistake: no more Public's
+
+Version 2.15
+-  Updated autoconfiguring
+-  Added SLN and project files for compilation with WIN32 VC++ 7.1
+-  Added copyright and (L)GPL notices to all source files

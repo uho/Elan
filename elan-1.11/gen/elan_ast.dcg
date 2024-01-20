@@ -1,0 +1,285 @@
+#
+# File: elan_ast.dcg
+# Specifies the datastructure definitions to hold the abstract syntax tree
+#
+# CVS ID: "$Id: elan_ast.dcg,v 1.10 2005/05/19 15:48:41 marcs Exp $"
+#
+
+#
+# Packets
+#
+packet = ( fname:string;		# Source file name
+	   pname:string;		# Packet name
+	   pdefines:[string];		# Packet defines
+	   puses:[string];		# Packet uses
+	   puselibs:[string];		# Packet use libs
+	   pdecls:[decl];		# Packet declarations
+	   pcode:[node];		# Packet code (between the decls)
+	   -pkdecls:decl_tree;		# Tree of packet declarations
+	 );
+
+#
+# Nodes
+#
+node =  ( line:int;			# Position of the construct
+	  column:int;			#
+
+	  Init				# Initialize
+	     name:string		#    Initialized name
+	     -id:decl			#    Corresponding declaration
+	     src:node			#    Value to initialize
+	| Assign			# Assignation
+	     dest:node			#    Destination
+	     src:node			#    Source
+	| Cond				# Conditional clause
+	     enq:node			#    Enquiry clause
+	     thenp:[node]		#    Then part
+	     elsep:[node]		#    Else part
+	     -typ:type			#    Balanced result type
+	| Num				# Numerical choice clause
+	     enq:node			#    Enquiring expression
+	     cps:[case_part]		#    Case Parts
+	     oth:[node]			#    Otherwise part
+	     -typ:type			#    Balanced result type
+	| For				# Generalized repetition
+	     lvar:string		#    Loop variable name
+	     -id:decl			#    Corresponding declaration
+	     dir:int			#    Direction of loop
+	     from:node			#    From part
+	     to:node			#    To part
+	     wenq:node			#    While part
+	     body:[node]		#    Loop body
+	     uenq:node			#    Until part
+	| While				# While clause
+	     wenq:node			#    While part
+	     body:[node]		#    Loop body
+	     uenq:node			#    Until part
+	| Leave				# Leave clause
+	     alg:string			#    algorithm name
+	     -id:decl			#    Corresponding algorithm
+	     with:node			#    premature result
+	| Dyn_call			# Dynamic call
+	     proc:node			#    Called proc
+	     args:[node]		#    Argument list
+	| Call				# Call
+	     pname:string		#    Called Proc
+	     -id:decl			#    Corresponding definition
+	     args:[node]		#    Argument list
+	| Display			# Display
+	     elts:[node]		#    Elements of display
+	     -typ:type			#    Type of display
+	| Sub				# Subscription
+	     arr:node			#    Array primary
+	     index:node			#    index
+	     -rtype:type		#    row type
+	| Select			# Selection
+	     str:node			#    Struct primary
+	     sel:string			#    selector
+	     -stype:type		#    structure type
+	     -fld:field			#    selected field
+	| Abstr				# Abstractor
+	     tname:string		#    Type name
+	     -id:decl			#    Corresponding decl
+	     arg:node			#    concrete primary
+	| Concr				# Concretizer
+	     arg:node			#    abstract primary
+	     -id:decl			#    definition of abstract type
+	| Dyop				# Dyadic operation
+	     dop:string			#    Operator
+	     -id:decl			#    Corresponding definition
+	     arg1:node			#    Argument1
+	     arg2:node			#    Argument2
+	| Monop				# Monadic operation
+	     mop:string			#    Operator
+	     -id:decl			#    Corresponding definition
+	     arg:node			#    Argument
+	| Ref_appl			# Refinement application
+	     name:string		#    Name
+	     -id:decl			#    Corresponding definition
+	| Appl				# Identifier application
+	     name:string		#    Name
+	     -id:decl			#    Corresponding definition
+	| Nil				# NIL-denoter
+	     -typ:type			#    Type of NIL
+	| Denoter			# Denoter
+	     val:value			#    Value
+	| Skip				# Skip
+	| Default			# Default node (repetition...)
+	;
+	);
+
+#
+# Case parts
+#
+case_part = ( lbls:[node];		# Case labels
+	      lcod:[node];		# Associated code
+	      -els:[int];		# Associated values of labels
+	    );
+
+#
+# Declarations
+#
+decl =  ( line:int;			# Position of declaration
+	  column:int;			#
+	  typ:type;			# Type
+	  name:string;			# The name of the declaration
+	  prs:[pragmat];		# Pragmats set on the declaration
+
+	  Formal			# Formal parameter
+	     acc:e_access		#    Access
+	     -vnr:int			#    ref to temporary
+	| Object_decl			# Object declaration
+	     acc:e_access		#    Access
+	     -vnr:int			#    ref to temporary
+	| Proc_decl			# Procedure declaration
+	     fpars:[decl]		#    Formal Parameters
+	     bdy:body			#    Body
+	| Op_decl			# Operator declaration
+	     fpars:[decl]		#    Formal Parameters
+	     bdy:body			#    Body
+	| Refinement			# Refinement
+	     acc:e_access		#    Access (-> to become obsolete)
+	     locals:[decl]		#    Local declarations
+	     rcode:[node]		#    refinement code
+	     -stat:status		#    refinement status
+	     -trc:int			#    refinement can be traced
+	| Synonym_value			# Let value declaration
+	     rhs:node			#    Right hand side expression
+	     -val:value			#    Evaluated value
+	     -stat:status		#    synonym status
+	     -rec:int			#    synonym is recursive
+	| Synonym_type			# Let type declaration
+	     -stat:status		#    type status
+	     -rec:int			#    type is recursive
+	| Type				# Type declaration
+	     -stat:status		#    type status
+	     -rec:int			#    type is recursive
+	     -concr:type		#    concrete type
+	;
+	);
+
+#
+# Procedure/Operator/Typeprocs bodies
+#
+body =	( Internal tname:string		# Internal routine body (tuple)
+	| External ename:string		# External routine body (C code)
+	| Routine			# Actual routine body
+	     locals:[decl]		#    Local declarations
+	     rcode:[node]		#    routine code
+	     -rdecls:decl_tree		#    Tree of local declarations
+	     -pnr:int			#    ref to proc
+	     -trc:int			#    routine can be traced
+	| Attach t:type			# Attach proc
+	| Detach t:type			# Detach proc
+	| Guard t:type			# Guard proc
+	;
+	);
+
+#
+# Values
+#
+value = ( Ival i:int			# Integer value
+	| Bval b:int			# Boolean value
+	| Rval r:real			# Real value
+	| Tval t:string			# Text value
+	| Errval			# Error value
+	;
+	);
+
+#
+# Types
+#
+type =  ( -tnr:int;			# Entry in type table
+	  Unknown			# UNKNOWN: 0
+	| Error				# error
+	| Any_non_void			# all non voids
+	| Any_row			# all rows
+	| Any_struct			# all structs
+	| Any_object			# all objects
+	| Addr				# Address: 6
+	| Int				# INT
+	| Bool				# BOOL
+	| Real				# REAL
+	| Text				# TEXT
+	| Void				# VOID: 11
+	| File				# FILE
+	| Niltype			# NILTYPE: 13
+	| Proto_row			# Rows of type before LET evaluation
+	     sz:node			#    size of row
+	     elt:type			#    element type
+	| Row				# Rows of type
+	     sz:int			#    size of row
+	     elt:type			#    element type
+	| Struct			# Structure type
+	     flds:[field]		#    fields
+	| Union				# Union type
+	     uflds:[field]		#    fields
+	| Proc_type			# Procedure type: 18
+	     parms:[pdecl]		#    parameter declarers
+	     rtype:type			#    result type
+	| Tname				# Typename
+	     tname:string		#    bold tag
+	     -id:decl			#    identified decl
+	| Proto_tname			# Parsed type name
+	     line:int			#    line
+	     column:int			#    column
+	     tname:string		#    bold tag
+	| Display_type			# Display type
+	     flds:[type]		#    subfields
+	| Unresolved			# Unresolved (procedure) types: 22
+	     typs:[type]		#    types
+	;
+	);
+
+#
+# Parameter declarers
+#
+pdecl = ( ptype: type;			# Parameter type
+	  pacc: e_access;		# Parameter access
+	);
+
+#
+# Fields
+#
+field = ( ftype:type;			# Field type
+	  fname:string;			# Field name
+	  -offset:int;			# Field offset
+	);
+
+#
+# Access
+#
+e_access = { acc_any, acc_const, acc_var, acc_proc, acc_error };
+
+#
+# Status during checking
+#
+status = { not_checked, being_checked, recursive, ref_checked, type_checked };
+
+#
+# type info (used during type equivalencing and build up of type table)
+# more fields to be added
+#
+type_info = ( text:string;		# text representation
+	      typ:type;			# the actual type
+	      -attach_nr:int;		# attach proc nr
+	      -detach_nr:int;		# detach proc nr
+	      -guard_nr:int;		# guard proc nr
+	      -stabs_nr:int;		# stabs type nr
+	    );
+
+#
+# Pragmats may be set by the lexer
+#
+pragmat = { no_pragmat, nonreentrant };
+
+#
+# import dcg_plist and decl_tree
+#
++ "dcg_plist";
++ "decl_tree"; 
+
+#
+# Specify those lists which are needed but which are no elements of the ast
+#
+? [type_info], [packet];

@@ -1,0 +1,11 @@
+The copyright of the mimir data structure generator and
+its libraries is held by Marc Seutter. Since mimir is
+intended to support the construction of compilers, its
+runtime libraries (libdcg and libdcg2) are distributed under
+the GNU Lesser General Public License. The datastructure
+generator itself (dcg) and its documentation is distributed
+under the GNU General Public License.
+
+This notice is accompanied by the text of the GNU General
+Public License (gnu-gpl-3.txt) and the text of the GNU
+Lesser General Public License (gnu-lgpl-3.txt).

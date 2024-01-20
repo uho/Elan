@@ -1,0 +1,130 @@
+.\"
+.\" Manual pages for elancc
+.\" Copyright (C) 2005, M. Seutter
+.\" 
+.\"
+.TH elancc 1 "19 mar 2005"
+.LO 1
+.SH NAME
+elancc \- compiler for ELAN sources.
+.SH SYNOPSYS
+elancc [many options possible] filename
+.SH WARNING
+The information in the man page is an extract from the full documentation
+of the ELAN compiler. As ELAN tends to evolve over time, this man page
+might not always be up to date.
+.SH DESCRIPTION
+.B elancc
+compiles ELAN source code into (native,
+.B gcc
+compatible) Assembler, which is then assembled
+using
+.BR gcc (gas),
+and then linked against the ELAN runtime system to generate an executable.
+.SH OPTIONS
+Options must be separated: `-lmS' is different from `-lm -S'.
+The following options are specific for \fBelancc\fR.
+.TP
+.B -h
+provides help on using \fBelancc\fR.
+.TP
+.B -V
+gives version of \fBelancc\fR.
+.TP
+.B -d
+turns on debugging mode.
+.TP
+.B -v
+gives extra information while \fBelancc\fR is compiling.
+.TP
+.B -fv
+gives lots of extra information while \fBelancc\fR is compiling.
+.TP
+.B -ic
+enables compatibility with
+.BR iris,
+an older ELAN compiler and programming environment.
+.TP
+.B -pp
+parses a single ELAN packet and outputs the packet in binary form.
+In this way packets may be preparsed to speed up later compilation
+of packets and main programs using this packet.
+.TP
+.B -po
+enables parsing only mode of \fBelancc\fR.
+After context free analysis, the compilation process stops. This
+mode is provided to incorporate \fBelancc\fR in a programming environment.
+.TP
+.B -dl
+dumps the output of the lexical analyzer.
+It is provided for debugging purposes only.
+.TP
+.B -dp
+dumps the output of the parser (context free analysis).
+It is provided for debugging purposes only.
+.TP
+.B -dc
+dumps the output of the checker (context dependent analysis).
+It is provided for debugging purposes only.
+.TP
+.B -di
+dumps the output of the intermediate code generator.
+It is provided for debugging purposes only.
+.TP
+.B -do
+dumps the output of the intermediate code optimizer.
+It is provided for debugging purposes only.
+.TP
+\fB\-I\fR\fIdir\fR
+adds \fIdir\fR to the packet search path (i.e. the list of directories
+to search for ELAN packets, either as source or preparsed).
+.PP
+The following options have been incorporated into \fBelancc\fR
+having the same semantics as for the Gnu compiler collection (gcc):
+.TP
+.B -g
+generates debugging (stabs) information for the generated Assembler code. 
+.TP
+.B -O
+turns on optimization.
+.TP
+.B -S
+generates and outputs Assembler code, but does not assemble and link
+the generated code.
+.TP
+.B -c
+only compiles ELAN into object code, but does not link this code.
+.TP
+\fB\-b\fR \fImachine\fR
+The \fImachine\fR argument specified the target machine for compilation.
+This option is typically used in conjunction with the \fB\-S\fR flag for
+crosscompilation to a different architecture as the host machine.
+.TP
+\fB\-o\fR \fIfile\fR
+outputs the resultant assembler file, object file or executable to \fIfile\fR.
+.TP
+\fB\-L\fR\fIdir\fR
+adds \fIdir\fR to the library search path (i.e. the list of directories
+searched for \fB\-l\fR.
+.TP
+\fB\-l\fR\fIlib\fR
+links the object file also against this library.
+.SH ENVIRONMENT
+A number of environment variables may influence the operation of \fBelancc\fR.
+Note that some options like \fB\-I\fR and \fB\-L\fR specify directories
+for searching. These take precedence over those specified by environment
+variables in the sense that they will be searched first before searching
+those specified by environment variables.
+.TP
+.B TMPDIR
+If \fBTMPDIR\fR is set, it specifies the directory to use for temporary files.
+\fBelancc\fR uses this directory to hold the output of the ELAN compiler and 
+assembler as input to the next stage of compilation. By default, /tmp is used.
+.TP
+.B ELAN_INCLUDE_PATH
+If \fBELAN_INCLUDE_PATH\fR is set, it specifies the directory to search for
+ELAN packets.
+.TP
+.B ELAN_LIBRARY_PATH
+If \fBELAN_LIBRARY_PATH\fR is set, it specifies the directory to search for
+libraries to link the resulting object code against.

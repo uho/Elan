@@ -1,0 +1,187 @@
+#
+# File: elan_imc.dcg
+# Specifies the datastructure definitions to hold the intermediate code
+#
+# CVS ID: "$Id: elan_imc.dcg,v 1.9 2006/12/27 21:10:21 marcs Exp $"
+#
+proc = ( pname: string;
+	 cname: string;
+	 rtyp: type;
+	 args: [decl];
+	 cbody: body;
+	 -anchor: tuple;
+	 -locals: [int];
+	 -count: int;
+	 -init_block: block;
+	 -tmp_pdecls: [pdecl];
+	 -tmp1: int;
+	 -tmp2: int;
+	 -pnr: int;
+       );
+
+tuple = ( opc: opcode;
+	  op1: oprd;
+	  op2: oprd;
+	  dst: oprd;
+	  -ad: int;
+	  -next: tuple;
+	  -prev: tuple;
+	);
+
+block = ( bnr: int;
+	  -direct_succ: block;
+	  -jump_succ: block;
+	  -pred: [ block ];
+	  -anchor: tuple;
+	);
+
+oprd =	( Tconst tval:string
+	| Rconst rval:real
+	| Iconst ival:int
+	| Proc pnr:int
+	| Rts proc:string
+	| Var vnr:int
+	| Lab lab:int
+	| Block bnr:int
+	| Types atypes: [pdecl]
+	| Reflexive
+	| Rts_nil
+	| Nop
+	;
+	);
+
+var =	( vname: string;
+	  vtype: type;
+	  vglob: int;
+	  vref: int;
+	  vused: int;
+	  -vsize: int;
+	  -offset: int;
+      	);
+
+#
+# refinement administration
+#
+refadm = ( algorithm: decl;
+	   kind: xkind;
+	   result: oprd;
+	   active_temps: [int];
+	   -lab:int;
+	   -trc:int;
+	 );
+
+xkind =  { k_value, k_addr, k_oprd, k_void };
+
+opcode ={ # General
+	  start_program,	   	# start,	--,	--,	--
+	  end_program,		   	# end,	--,	--,	--
+
+	  # Procedure calls
+	  prepare_call,		   	# pcall,	#nr,	--,	--
+	  load_parameter,	   	# lpar,		param,	#nr,	--
+	  load_address_parameter,  	# lpar&,	param,	#nr,	--
+	  call_procedure,	   	# call,		proc,	#nr,	retop
+	  call_attach_procedure,   	# call_att,	proc,	#nr,	--
+	  call_detach_procedure,   	# call_det,	proc,	#nr,	--
+	  call_guard_procedure,	   	# call_grd,	proc,	#nr,	--
+
+	  # Procedure entry and return
+	  enter_procedure,	   	# enter,	proc,	--,	--
+	  leave_procedure,	   	# leave,	proc,	--,	--
+
+	  # Jumps
+	  jump,			   	# jmp,		--,	--,	label
+	  jump_if_nil,			# jif_nil,	oprd,	--,	label
+	  jump_if_null,			# jif_null,	oprd,	--,	label
+	  jump_if_addr_equal_addr,	# jif_==A,	addr,	addr,	label
+	  jump_if_int_equal_int,	# jif_==I,	oprd,	oprd,	label
+	  jump_if_int_notequal_int,	# jif_!=I,	oprd,	oprd,	label
+	  jump_if_int_less_than_int,	# jif_<I,	int,	int,	label
+	  jump_if_int_less_equal_int,	# jif_<=I,	int,	int,	label
+	  jump_if_int_greater_than_int,	# jif_>I,	int,	int,	label
+	  jump_if_int_greater_equal_int,# jif_>=I,	int,	int,	label
+
+	  # Garbage collection
+	  undefine,			# undef,	--,	--,	oprd
+	  allocate,			# allocate,	#size,	--,	dest
+	  guard,			# guard,	oprd,	--,	dest
+	  attach_adr,			# att&,		oprd,	--,	dest/--/Reflexive
+	  attach_offset,	        # att_off,	addr,	#offs,	dest/--/Reflexive
+	  detach_adr,			# det&,		oprd,	--,	--
+	  detach_offset,	        # det_off,	addr,	#offs,	--
+	  predetach_adr,		# predet&,	oprd,	--,	dest
+
+	  # Copy group
+	  copy_adr_of,			# :=&,		oprd,	--,	addr
+	  copy_int,			# :=I,		oprd,	--,	dest
+	  copy_int_indirect,	        # *:=I,		oprd,	--,	addr
+	  copy_indirect_int,	        # :=*I,		addr,	--,	dest
+	  copy_adr,			# :=A,		oprd,	--,	dest
+	  copy_adr_indirect,		# *:=A,		oprd,	--,	addr
+	  copy_indirect_adr,		# :=*A,		addr,	--,	dest
+	  copy_real,			# :=R,		oprd,	--,	dest
+	  copy_real_indirect,		# *:=R,		oprd,	--,	addr
+	  copy_indirect_real,		# :=*R,		addr,	--,	dest
+
+	  # Rts support ops
+	  is_nil,			# is_nil,	addr,	--,	bool
+	  addr_plus_offset,		# A+I,		addr,	int,	dest
+	  row_index,			# row_chk,	int,	int,	dest
+
+	  # Integer ops
+	  int_plus_int,			# +I,		int,	int,	int
+	  int_minus_int,		# -I,		int,	int,	int
+	  int_times_int,		# *I,		int,	int,	int
+	  int_div_int,			# DIV,		int,	int,	int
+	  int_mod_int,			# MOD,		int,	int,	int
+	  int_pow_int,			# **I,		int,	int,	int
+	  negate_int,			# -I,		int,	--,	int
+	  int_equal_int,		# ==I,		oprd,	oprd,	bool
+	  int_notequal_int,		# !=I,		oprd,	oprd,	bool
+	  int_less_than_int,		# <I,		int,	int,	bool
+	  int_less_equal_int,		# <=I,		int,	int,	bool
+	  int_greater_than_int,		# >I,		int,	int,	bool
+	  int_greater_equal_int,	# >=I,		int,	int,	bool
+
+	  # Bool ops
+	  bool_and_bool,		# &&,		bool,	bool,	bool
+	  bool_or_bool,			# ||,		bool,	bool,	bool
+	  bool_xor_bool,		# ^^,		bool,	bool,	bool
+	  not_bool,			# !,		bool,	-,	bool
+
+	  # Real ops
+	  real_plus_real,		# +R,		real,	real,	real
+	  real_minus_real,		# -R,		real,	real,	real
+	  real_times_real,		# *R,		real,	real,	real
+	  real_divide_real,		# /R,		real,	real,	real
+	  real_pow_int,                 # **RI,		real,	int,	real
+	  negate_real,			# -R,		real,	--,	real
+	  real_equal_real,		# ==R,		oprd,	oprd,	bool
+	  real_notequal_real,		# !=R,		oprd,	oprd,	bool
+	  real_less_than_real,		# <R,		real,	real,	bool
+	  real_less_equal_real,		# <=R,		real,	real,	bool
+	  real_greater_than_real, 	# >R,		real,	real,	bool
+	  real_greater_equal_real,	# >=R,		real,	real,	bool
+
+	  # Texts ops
+	  text_plus_text,		# +T,		text,	text,	dest
+	  int_times_text,		# *T,		int,	text,	dest
+	  text_equal_text,		# ==T,		text,	text,	bool
+	  text_notequal_text,		# !=T,		text,	text,	bool
+	  text_less_than_text,		# <T,		text,	text,	bool
+	  text_less_equal_text,		# <=T,		text,	text,	bool
+	  text_greater_than_text,	# >T,		text,	text,	bool
+	  text_greater_equal_text,	# >=T,		text,	text,	bool
+
+	  # Conversions
+	  int_to_real,		  	# I2R,		int,	--,	dest
+
+	  # Miscellaneous
+	  sline,			# sline,	lineno,	posno,	--
+	  comment,		  	# /*,		text,	--,	*/,
+	  nop			  	# nop,		--,	--,	--,
+	};
+
++ "dcg_plist";
++ "elan_ast";
+? [proc], [tuple], [oprd], [var], [int], [refadm];

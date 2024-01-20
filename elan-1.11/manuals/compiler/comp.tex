@@ -1,0 +1,260 @@
+\documentclass [a4paper,12pt,fleqn]{article}
+\usepackage {epsfig}
+\input {../common/abbrev}
+\input {../common/artdefs}
+\title {Description of the \ELAN Compiler\\
+and the \ELAN Runtime System}
+\author {M. Seutter}
+\begin {document}
+\maketitle
+\section {Overview}
+The \ELAN compiler (\verb+elancc+) translates programs written in \ELAN
+to equivalent programs written in Assembler for a range of architectures.
+Currently the Intel IA-32, Sparc, Alpha and VAX11 architectures are
+supported. Upon succesfull compilation the (Gnu) assembler and linker
+is called to assemble the program and link it against the \ELAN RunTime
+System to create an executable:
+\begin{center}
+\epsfbox{flow2.eps}
+\end{center}
+\section {The \ELAN compiler}
+\subsection {Basic structure of the \ELAN compiler}
+The \ELAN compiler itself is written in \Cns. It translates \ELAN programs
+in 5 passes, which communicate through common datastructures:
+\vspace*{1ex}
+\begin{center}
+~\epsfbox{flow.eps}
+\end{center}
+\vspace*{1ex}
+The first pass does lexical and syntactical analysis. The lexical analysis
+recognizes program symbols, which are read by the syntactical analysis.
+The syntactical analysis recognizes the structure of the program and
+constructs a so-called abstract syntax tree (AST), representing this
+structure. During this phase the USES clause of the program is checked
+to decide whether certain user packets should be parsed as well (which
+may necessitate the parsing of even more packets) and the order in which
+they should be analyzed in the second pass. The first pass then finishes
+by reading the precompiled standard prelude \verb+standard.ppe+, which
+defines all predefined operations contained in the \ELAN compiler and
+runtime environment. All these definitions are incorporated in an
+abstract syntax tree, which is forwarded to the second pass of the compiler.
+
+The second pass of the compiler is responsible for semantical analysis.
+During semantical analysis, objects, procedures and operators are identified
+and context conditions are checked. While the compiler is checking, it
+decorates the abstract syntax tree with extra information, which eases
+the next pass of the compiler.
+
+The third pass of the compiler translates program constructs into
+machine independent, yet close to actual hardware, abstract machine code.
+This intermediate code (IMC) is based on quadruple notation and is
+especially suited for machine independent optimization.
+
+The fourth pass of the compiler is responsible for machine independent
+code optimization. Currently, this pass is not yet implemented.
+
+Finally, the fifth pass of the compiler translates the intermediate code
+into Assembler for the target architecture. This translation is quite
+straightforward. Typically, one instruction in the intermediate code
+corresponds to two or three instructions in Assembler. Since no register
+optimization is performed, the resulting code leaves much to be desired
+in efficiency.
+
+The previous figure also shows the module decomposition of the \ELAN compiler.
+\subsection {Common modules}
+\begin {list}{-}{}
+\item [ {\tt elan\_ast.c} ]
+This module describes the structure of the abstract syntax tree. It is
+generated from the datastructure definition file {\tt elan\_ast.dcg}.
+\item [ {\tt ast\_utils.c} ]
+This module defines access routines to the abstract syntax tree as well
+some usefull utilities.
+\item [ {\tt elan\_imc.c} ]
+This module describes the structure of the intermediate code (IMC).
+One may view this intermediate code as a linear array of symbolic
+instructions, some of which carry labels to allow them to be used as
+targets of jumps.
+It is generated from the datastructure definition file {\tt elan\_imc.dcg}.
+\item [ {\tt imc\_utils.c} ]
+This module defines access routines to the intermediate code as well
+as a number of conversion routines.
+\item [ {\tt decl\_tree.c} ]
+This module defines the structure of the per packet tree of declarations.
+These trees are constructed by the semantical analysis phase.
+\end{list}
+\subsection {Top level}
+Three modules comprise the top level of the \ELAN compiler:
+\begin {list}{-}{}
+\item [ {\tt main.c} ]
+This module defines the main program of the \ELAN compiler.
+\item [ {\tt options.c} ]
+This module parses the command line for compiler options and
+the name of the source file.
+\item [ {\tt backend.c} ]
+This module is responsible for the spawning of the assembler and linker
+after a succesfull compilation.
+\end{list}
+\subsection {Syntactical phase}
+The first pass of the compiler is formed by the following three modules:
+\begin {list}{-}{}
+\item [ {\tt lexer.c} ]
+The lexer is responsible for the lower level reading of \ELAN source files.
+Layout and comments are discarded by the lexer, while tokenizing the input.
+\item [ {\tt parser.c} ]
+The parser recognizes the structure of the source program (and user packets)
+and builds abstract syntax trees for these constructs. It is the largest
+(and most documented) module of the \ELAN compiler.
+\item [ {\tt contfree.c} ]
+This module is responsible for combining the abstract syntax trees as
+delivered by the parser of the source program and all user and system
+packets the source program uses (directly or indirectly) into one
+combined abstract syntax tree. Packets are then sorted according to their
+use to define the order in which the semantical phase should analyze them.
+\end{list}
+\subsection {Semantical phase}
+The second pass of the compiler consists only of seven modules:
+\begin {list}{-}{}
+\item [ {\tt contsens.c} ]
+\item [ {\tt prechecker.c} ]
+\item [ {\tt evaluate.c} ]
+\item [ {\tt checker.c} ]
+\item [ {\tt symbol\_table.c} ]
+\item [ {\tt type\_table.c} ]
+%This module checks if the source file (and the standard library) conform
+%to the context conditions described in the \MINI language description by
+%traversing and decorating the abstract syntax tree (or more accurately
+%by breaking down the abstract syntax tree and reconstructing a decorated
+%abstract syntax tree from the parts).
+\item [ {\tt ident.c} ]
+%This module checks prior to the traversal of the abstract syntax tree,
+%whether it contains any (conflicting) double declarations. During the
+%traversal, it tries to find for every application of a name a corresponding
+%definition. Since \MINI allows generic (overloaded) procedure and operator
+%declaration, both tasks are not trivial.
+\end{list}
+\subsection {Intermediate code generation}
+Intermediate code generation is done by the module {\tt imc\_gen.c}.
+It translates the source program and packets into an equivalent program
+in the intermediate code by traversing the abstract syntax tree while
+coding the program.
+\subsection {Target code generation}
+The last phase of the compiler consists of seven modules:
+\begin{list}{-}{}
+\item [ {\tt tgt\_gen.c} ]
+This module does some initialization for code generation and then
+calls the correct target code generator as determined from the options
+and compiler configuration.
+\item [ {\tt tgt\_gen\_machdep.c} ]
+This module is responsible for recognition of certain target properties.
+\item [ {\tt tgt\_gen\_common.c} ]
+This module contains all functions that are common to all target code
+generators.
+\item [ {\tt tgt\_gen\_intel.c} ]
+This module translates the intermediate code into Intel IA-32 Assembler.
+\item [ {\tt tgt\_gen\_sparc.c} ]
+This module translates the intermediate code into Sparc ($ \leq $V9) Assembler.
+\item [ {\tt tgt\_gen\_alpha.c} ]
+This module translates the intermediate code into Alpha Assembler.
+\item [ {\tt tgt\_gen\_vax.c} ]
+This module translates the intermediate code into VAX11 Assembler.
+\end{list}
+\section {Runtime model}
+\subsection {Memory model and object representation}
+The runtime model for \ELAN is based on the usual \C conventions of the
+target machines (with some additions). We assume that memory consists of
+words capable of holding one \verb+int+, which are either 4 or 8 bytes
+long and correspondingly aligned. Addresses however are byte addresses.
+
+The memory is partitioned in three parts, called the text, data and stack
+segment, thus conforming to the usual \C and \Unix conventions. The text
+segment holds the program code. The data segment holds {\tt TEXT} denotations
+and the heap. This heap grows towards higher addresses. The stack is used
+for procedure return addresses, actual parameters (when required by the \C
+calling convention for the target machine (Note Sparc and Alpha)), local
+variables and intermediate results and grows from high to low addresses. 
+
+Integers, booleans, reals and addresses are represented by their actual values.
+A {\tt TEXT} is represented by a pointer, pointing to a null terminated
+string of characters, residing in the heap (when dynamically allocated)
+or in the data segment (when pointing to a {\tt TEXT} denotation).
+The null pointer is used to represent {\em uninitialized} {\tt TEXT} values.
+Thus all objects in \ELAN use one or two machine words in the target
+architecture (and can therefore be loaded in machine registers).
+\subsection {Incremental garbage collection}
+To support reuse of memory, an {\em incremental garbage collector} is
+implemented for all objects in the heap. All objects in the heap are
+therefore preceded by two {\em short} integers. The first of these shorts
+denotes the number of pointers pointing to the object, the so-called
+{\em reference count}. The other object denotes the {\em actual} object
+length. To allow ease of reuse, all objects are allocated on double word
+aligned addresses. Objects may therefore be padded with bytes, thus sometimes
+causing the actual object length to be larger than the needed object length.
+
+The basic idea of incremental garbage collection is that the reference count
+of the object is incremented when a pointer starts to point to the object
+and decremented when a pointer no longer points to the object. When the
+reference count of an object drops to 0, it has become unreachable from
+the running program and can therefore be reused. For historic reasons,
+these two operations are called {\em attach} and {\em detach}. The
+\verb+TEXT+ assignment in \ELAN can then be described by the following
+three simple steps:
+\begin{tabbing}
+\hspace*{2em}\=Attach the source object \\
+\>Detach the destination object\\
+\>Copy source to destination (Only an address)
+\end{tabbing}
+The reader may figure out for herself why the attach operation {\em must}
+be executed first.
+
+{\tt TEXT} denotations have the same layout as heap objects. They differ
+however in two aspects. They are allocated in the constant part of the
+(read only) data segment. To indicate that they are constant and should
+never be recycled by the garbage collector, their reference count equals -1.
+
+The following three functions are available to interact with the garbage
+collector:
+\begin{list}{-}{}
+\item [{\tt char~*rts\_malloc~(int~size)}] ~\\
+This function allocates an object able to hold \verb+size+ bytes either
+from the internal free list administration or from the heap. The initial
+reference count of this object is (of course) 1. It is guaranteed that
+the allocated object is double word aligned.
+\item [{\tt char~*rts\_attach~(char~*ptr)}] ~\\
+This function increases the reference count of the object, {\tt ptr} is
+pointing to. When {\tt ptr} is a null pointer, {\tt rts\_attach} aborts.
+When the original reference count was -1, {\tt rts\_attach} returns directly.
+\item [{\tt void~rts\_detach~(char~**ptr)}] ~\\
+This function decreases the reference count of the object, {\tt *ptr} is
+pointing to while resetting {\tt *ptr}. When the reference count becomes 0,
+the object is moved to the internal free list administration. When {\tt *ptr}
+was a null pointer or was pointing to a {\tt TEXT} denotation,
+{\tt rts\_detach} returns directly. 
+\item [{\tt void~rts\_predetach~(char~**ptr)}] ~\\
+More explanation needed.
+\item [{\tt void~rts\_guard~(char~**ptr, int size)}] ~\\
+Sets the guard bit. More explanation needed.
+\item [{\tt void~rts\_init\_gc~()}] ~\\
+This function initializes the free list administration.
+\end{list}
+\subsection {The runtime library {\tt liberts.a}}
+The runtime library currently consists of the following 9 modules:
+\begin{list}{-}{}
+\item [{\tt rts\_init}] This module initializes the runtime system.
+\item [{\tt rts\_error}] This module gives runtime errors.
+\item [{\tt rts\_alloc}] The garbage collector. See above.
+\item [{\tt rts\_ints}]
+This module holds support routines for {\tt INT} operations.
+\item [{\tt rts\_reals}]
+This module holds support routines for {\tt REAL} operations.
+\item [{\tt rts\_texts}]
+This module holds support routines for {\tt TEXT} operations.
+\item [{\tt rts\_files}]
+This module holds support routines for {\tt FILE} operations.
+\item [{\tt rts\_term}]
+This module is responsible for the terminal interface.
+\item [{\tt rts\_system}]
+This module is responsible for the operating system interface.
+\item [{\tt rts\_random}]
+This module contains a random generator.
+\end{list}
+\end {document}

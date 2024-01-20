@@ -1,0 +1,51 @@
+#!/bin/sh
+# check nr of arguments
+if [ $# -eq 0 ]
+then
+   echo 'Missing argument'
+   exit
+elif [ $# -gt 1 ]
+then
+   echo 'Too many arguments'
+   exit
+fi
+
+# pick up single argument of script
+# and cd into that directory if possible
+exp=$1
+if [ -d ./$exp ]
+then
+   cd ./$exp
+else
+   echo 'No such directory:' $exp
+   exit
+fi
+
+# iterate over elan files in directory
+res=$exp.lst
+echo 'Creating results listing for' $exp > $res
+date >> $res
+for i in *.e
+do
+  # Try and compile mini file
+  name=`basename $i .e`
+  echo 'Trying to compile file' $name.e >> $res
+  cat $name.e >> $res
+  echo >> $res
+  elan -v $name >> $res 2>&1
+  if [ $? -eq 0 ]
+  then
+     # If succesfully compiled, execute it
+     echo 'Executing' $name >> $res
+     if [ -f $name.in ]
+     then
+        ./$name < $name.in >> $res 2>&1
+     else
+        ./$name >> $res 2>&1
+     fi
+  fi
+  echo >> $res
+  echo 'Finished with file' $name.e >> $res
+  echo >> $res
+done
+mv $res ..

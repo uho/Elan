@@ -1,0 +1,28 @@
+% spacing
+\newcommand {\idhalf}{\hspace*{.5em}}
+\newcommand {\idone}{\hspace*{1em}}
+\newcommand {\idtwo}{\hspace*{2em}}
+\newcommand {\idten}{\hspace*{10em}}
+\newcommand {\idfour}{\hspace*{4em}}
+\newcommand {\idvert}{\vspace*{1em}}
+% poetic citations
+\newenvironment{mycite}%
+{\begin{flushright} \begin{minipage}[t]{12in} \em \begin{tabbing}}%
+{\end{tabbing} \end{minipage} \end{flushright}}
+% list environments
+\newcounter{letterctr}
+\newenvironment{letterlist}%
+{\begin{list} {\alph {letterctr})} {\usecounter {letterctr}}}%
+{\end{list}}
+\newcounter{capsctr}
+\newenvironment{capslist}%
+{\begin{list} {\Alph {capsctr})} {\usecounter {capsctr}}}%
+{\end{list}}
+\newcounter{ciphctr}
+\newenvironment{ciphlist}%
+{\begin{list} {\arabic {ciphctr})} {\usecounter {ciphctr}}}%
+{\end{list}}
+\newcounter{romanctr}
+\newenvironment{romanlist}%
+{\begin{list} {\arabic {romanctr})} {\usecounter {romanctr}}}%
+{\end{list}}
