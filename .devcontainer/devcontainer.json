@@ -1,0 +1,20 @@
+{
+    "name": "Elan development environmentt",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+			]
+        },
+        "settings": { 
+            "terminal.integrated.shell.linux": "/bin/bash",
+            "git.enabled": true,
+            "git.autofetch": true,
+            "git.confirmSync": false
+        }
+    }
+}
+
