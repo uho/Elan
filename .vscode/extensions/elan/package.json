@@ -1,0 +1,29 @@
+{
+    "name": "elan",
+    "version": "0.1.0",
+    "engines": {
+        "vscode": ">=0.9.0-pre.1"
+    },
+    "publisher": "Ulrich_Hoffmann",
+    "repository": "https://github.com/uho/Elan",
+    "contributes": {
+        "languages": [
+            {
+                "id": "elan",
+                "aliases": [
+                    "Elan"
+                ],
+                "extensions": [
+                    ".e"
+                ]
+            }
+        ],
+        "grammars": [
+            {
+                "language": "elan",
+                "scopeName": "source.elan",
+                "path": "./syntaxes/elan.tmLanguage.json"
+            }
+        ]
+    }
+}

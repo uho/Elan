@@ -1,0 +1,168 @@
+{
+  "fileTypes": [
+    "e"
+  ],
+  "foldingStartMarker": "/\\*\\*|\\{\\s*$",
+  "foldingStopMarker": "\\*\\*/|^\\s*\\}",
+  "keyEquivalent": "^~F",
+  "name": "Elan",
+  "patterns": [
+    {
+      "begin": "\\{",
+      "end": "\\}",
+      "name": "comment.block.elan"
+    },
+    {
+      "begin": "#\\(",
+      "end": "\\)#",
+      "name": "comment.block.elan"
+    },
+    {
+      "begin": "\\(\\*",
+      "end": "\\*\\)",
+      "name": "comment.block.elan"
+    },
+    {
+      "begin": "\"",
+      "end": "\"",
+      "name": "string.quoted.double.elan"
+    },
+    {
+      "match": "\\b(TRUE|FALSE|maxint|minint|pi|NIL)\\b",
+      "name": "constant.language.elan"
+    },
+    {
+      "match": "\\b[0-9]+([.][0-9]+([E][+-]?[0-9]+)?)?\\b",
+      "name": "constant.numeric.elan"
+    },
+    {
+      "match": "\\b(ENDIF|END IF|FI|ENDREPEAT|END REPEAT|ENDREP|END REP|PER|ENDSELECT|END SELECT|LEAVE)(?=\\b|\\.|\\;)",
+      "name": "keyword.control.elan"
+    },
+    {
+      "match": "\\b(CASE|ELIF|ELSE|IF|LEAVE|OF|OTHERWISE|REPEAT|REP|SELECT|THEN|UNTIL|WHILE|WITH)(?=\\b)",
+      "name": "keyword.control.elan"
+    },
+    {
+      "match": "\\b(FOR|FROM|UPTO|DOWNTO)(?=\\b)",
+      "name": "keyword.control.elan"
+    },
+    {
+      "match": "(\\b(PROC|ENDPROC|END PROC|ENDPROCEDURE|END PROCEDURE)\\b\\s+)([a-z][a-z0-9 ]*)(?=\\b|\\.|\\;)",
+      "captures": {
+        "1": {
+          "name": "keyword.other.elan"
+        },
+        "3": {
+          "name": "entity.name.function.defining.elan"
+        }
+      }
+    },
+    {
+      "match": "(\\b(OP|OPERATOR|ENDOP|END OP|END OPERATOR|ENDOPERATOR)\\b\\s+)([a-z][a-z0-9 ]*|[^ ;.]+)",
+      "captures": {
+        "1": {
+          "name": "keyword.other.elan"
+        },
+        "3": {
+          "name": "entity.name.function.defining.elan"
+        }
+      }
+    },
+    {
+      "match": "\\b[a-z][a-z0-9 ]*(?=:)(?=[^=])",
+      "name": "entity.name.refinement.defining.elan"
+    },
+    {
+      "match": "\\b(CONST|VAR)\\b\\s+([a-z][a-z0-9 ]*(\\s*(,)\\s*[a-z][a-z0-9 ]*)*\\s*)(?=;)",
+      "captures": {
+        "1": {
+          "name": "storage.type.elan"
+        },
+        "2": {
+          "name": "entity.name.variable.defining.elan"
+        }
+      }
+    },
+    {
+      "match": "(\\b(TYPE)\\b\\s+)([A-Z]+)",
+      "captures": {
+        "1": {
+          "name": "storage.type.elan"
+        },
+        "3": {
+          "name": "entity.name.variable.defining.elan"
+        }
+      }
+    },
+    {
+      "match": "(\\b(LET)\\b\\s+)([a-z][a-z0-9 ]*|[A-Z]+)",
+      "captures": {
+        "1": {
+          "name": "storage.type.elan"
+        },
+        "3": {
+          "name": "entity.name.variable.defining.elan"
+        }
+      }
+    },
+    {
+      "match": "\\b(PROC|USE|USES|ENDPROC|ENDOP)\\b",
+      "name": "keyword.elan"
+    },
+    {
+      "begin": "(DEFINES)",
+      "end": ":",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.elan"
+        }
+      },
+      "name": "entity.name.function.defining.elan"
+    },
+    {
+      "match": "(\\b(PACKET|ENDPACKET|END PACKET)\\b\\s+)([a-z][a-z0-9 ]*)",
+      "captures": {
+        "1": {
+          "name": "keyword.other.elan"
+        },
+        "3": {
+          "name": "entity.name.function.defining.elan"
+        }
+      }
+    },
+    {
+      "match": "\\b(INT|REAL|BOOL|TEXT)\\b",
+      "name": "support.type.elan"
+    },
+    {
+      "match": "\\b(VAR|CONST|ROW|STRUCT)\\b",
+      "name": "storage.type.elan"
+    },
+    {
+      "match": "\\b(OR|AND|DIV||MOD|NOT|INCR|DECR|CONCR|ISNIL)\\b",
+      "name": "keyword.operator.elan"
+    },
+    {
+      "match": "(:=|&|=|<>|/=|~=|<|<=|>|>=|\\+|-|\\*|/|%|//|\\*\\*|~|::)",
+      "name": "keyword.operator.elan"
+    },
+    {
+      "match": "\\b(CAT|LENGTH|HEAD|TAIL|SUB)\\b",
+      "name": "keyword.string.operator.elan"
+    },
+    {
+      "match": "\\b(put|line|page|int|real|text|ln|abs|get|choose128|exectime|assert|beep|sleep)\\b",
+      "name": "support.function.elan"
+    },
+    {
+      "match": "\\b[a-z][a-z0-9 ]*\\b",
+      "name": "identifier.elan"
+    },
+    {
+      "include": "#comment"
+    }
+  ],
+  "scopeName": "source.elan",
+  "uuid": "0AAA4CFD-D621-4B33-BB76-E5D9EDE64E84"
+}
