@@ -13,7 +13,17 @@
             "terminal.integrated.shell.linux": "/bin/bash",
             "git.enabled": true,
             "git.autofetch": true,
-            "git.confirmSync": false
+            "git.confirmSync": false,
+            "editor.tokenColorCustomizations": {
+                "textMateRules": [
+                    {
+                        "scope": "keyword.operator.elan",
+                        "settings": {
+                            "foreground": "#9090FF"
+                        }
+                    }
+                ]
+            }
         }
     }
 }
