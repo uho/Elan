@@ -24,6 +24,7 @@ First build Mimir:
 
 Then build elancc:
 
+    $ export LD_LIBRARY_PATH=/usr/local/lib
     $ cd elan-1.11
     $ ./configure
     $ make
